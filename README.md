@@ -10,8 +10,8 @@ Here's an example of a iambic pentameter that you would typically encounter on r
 
 > this post has been removed for breaking rule 
 
-This line follows the ``0101010101` stress pattern, here's abreakdown
+This line follows the ``0101010101`` stress pattern, here's a breakdown
 
-	this post has been re moved for brea king rule
-	0    1    0   1    0  1     0   1    0    1   
+	this | post | has | been | re | moved | for | brea | king | rule
+	 0   |  1   |  0  |  1   | 0  |   1   |  0  |  1   |  0   |  1   
 
