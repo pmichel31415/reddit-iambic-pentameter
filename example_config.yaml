@@ -1,0 +1,17 @@
+general:
+  output_file: iambic_pentameters.txt
+  debug: False
+reddit:
+  user_agent: user_agent
+  user_name: user_name
+  client_id: client_id
+  password: password
+  secret: secret
+  subreddit: all
+options:
+  max_records: 1000
+  report_every: 1000
+  sleep_for: 0.5
+poetry:
+  pattern: "01010101010"
+  allow_feminine_rhyme: True
