@@ -99,6 +99,7 @@ def main():
             percent_length_removed = (bot.n_length_removed) / bot.options.report_every * 100
             print('Analyzed %d comments, %.2f%% too short/long, found %d iambic pentameters (total: %d), %.1f comments/s' %
                   (i, percent_length_removed, bot.n_pentameters_epoch, bot.n_pentameters, i / elapsed))
+            sys.stdout.flush()
             # Sleep a bit
             time.sleep(bot.options.sleep_for)
             # Reset periodic counters
