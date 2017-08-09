@@ -29,6 +29,9 @@ def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rh
             s = s.translate(two_to_one_stress)
             # Number of syllables of the word
             l = len(s)
+            # Trick from (Ghazvininejad et al., 2016)
+            if l>2 and s[-3:] == '100':
+                s[-3:] = '101'
             # check whether the stress patterns match
             if l <= L and pattern.find(s, 0, l) == 0:
                 # if yes, reduce the target pattern and get to next word
