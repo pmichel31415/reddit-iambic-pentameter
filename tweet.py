@@ -1,20 +1,26 @@
+# -*- coding: utf-8 -*-
 import tweepy
+import sys
+
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 def comment_to_tweet(comment):
     nsfw = '[NSFW] ' if comment.submission.over_18 else ''
     user = '/u/%s' % comment.author
     sub = '/r/%s' % comment.submission.subreddit
     text = comment.body
-    return '%s From /u%s on %r:\n%s' % (nsfw, user, sub, text)
+    tweet = '%s "%s"\n\n(from %s in %s)' % (nsfw, text, user, sub)
+    if len(tweet) > 140:
+        tweet = tweet[:139] + '…'
+    return tweet
 
 def tweet(text, twitter):
     auth = tweepy.OAuthHandler(twitter.consumer_key, twitter.consumer_secret)
     
-    # Redirect user to Twitter to authorize
-    redirect_user(auth.get_authorization_url())
-    
     # Get access token
-    auth.get_access_token(twitter.verifier_value)
+    auth.set_access_token(twitter.access_token, twitter.access_token_secret)
 
     # Construct the API instance
     api = tweepy.API(auth)

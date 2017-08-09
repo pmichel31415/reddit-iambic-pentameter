@@ -11,7 +11,8 @@ reddit:
 twitter:
   consumer_key: consumer_key
   consumer_secret: consumer_secret
-  verifier_value: verifier_value
+  access_token: access_token
+  access_token_secret: access_token_secret
 options:
   max_records: 1000
   report_every: 1000
