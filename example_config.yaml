@@ -8,6 +8,10 @@ reddit:
   password: password
   secret: secret
   subreddit: all
+twitter:
+  consumer_key: consumer_key
+  consumer_secret: consumer_secret
+  verifier_value: verifier_value
 options:
   max_records: 1000
   report_every: 1000

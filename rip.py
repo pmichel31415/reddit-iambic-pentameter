@@ -7,6 +7,7 @@ import time
 from collections import defaultdict
 
 import yaml
+import tweet
 import string
 
 import poetry
@@ -61,6 +62,7 @@ class IambicPentameterBot(object):
         # Save the pentameter
         if pentameter:
             self.save_pentameter(comment, candidate)
+            tweet.tweet(tweet.comment_to_tweet(comment), self.twitter)
             self.n_pentameters += 1
             self.n_pentameters_epoch += 1
 
