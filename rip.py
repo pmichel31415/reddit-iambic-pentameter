@@ -67,7 +67,7 @@ class IambicPentameterBot(object):
     def save_pentameter(self, comment, verse):
         """Saves verse to tsv file with some metadata"""
         with open(self.general.output_file, 'a+') as f:
-            print('%s\t%s\t%d' % (comment.author, verse, time.time()), file=f)
+            print('%d\t/u/%s\t/r/%s\t%s\t%s' % (time.time(), comment.author, comment.submission.subreddit, comment.submission.over_18, verse), file=f)
 
 
 def main():
@@ -110,8 +110,21 @@ def main():
 
 def test():
     bot = IambicPentameterBot(sys.argv[1])
-    bot.is_iambic_pentameter('And hail the son of God and kill the beast')
+    # Get reddit instance
+    reddit = praw.Reddit(user_agent=bot.reddit.user_agent,
+                         client_id=bot.reddit.client_id,
+                         client_secret=bot.reddit.secret,
+                         username=bot.reddit.user_name,
+                         password=bot.reddit.password)
+    # Get subreddit instance
+    test_comment = reddit.comment(id='cqmldc6')
+    #test_comment.body = 'this post has been removed for breaking rule'
+    test_comment.body = 'United as a peaceful resolution'
+    bot.is_iambic_pentameter(test_comment)
 
 if __name__ == '__main__':
-    main()
-    # test()
+    if '--test' in sys.argv:
+        test()
+    else:
+        main()
+
