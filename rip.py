@@ -118,8 +118,7 @@ def test():
                          password=bot.reddit.password)
     # Get subreddit instance
     test_comment = reddit.comment(id='cqmldc6')
-    #test_comment.body = 'this post has been removed for breaking rule'
-    test_comment.body = 'United as a peaceful resolution'
+    test_comment.body = 'And cafeteria of other crackers'
     bot.is_iambic_pentameter(test_comment)
 
 if __name__ == '__main__':
