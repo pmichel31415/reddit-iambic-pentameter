@@ -5,7 +5,7 @@ MIN_CHARS = 15
 MAX_CHARS = 40
 
 # Dictionnary matching 2 to 1 in stress patterns
-two_to_one_stress = {ord('2'): '1'}
+two_to_one_stress = {ord('2'): u'1'}
 
 
 def length_ok(candidate):

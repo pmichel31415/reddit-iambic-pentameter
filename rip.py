@@ -14,8 +14,8 @@ import poetry
 # Filter table to remove all non ascii_lowercase/space characters
 filter_table = defaultdict(lambda: None)
 for c in string.ascii_lowercase:
-    filter_table[c] = c
-filter_table[ord(' ')] = ' '
+    filter_table[c] = unicode(c, 'utf-8')
+filter_table[ord(' ')] = u' '
 
 
 class Attributes(object):
@@ -67,7 +67,7 @@ class IambicPentameterBot(object):
     def save_pentameter(self, comment, verse):
         """Saves verse to tsv file with some metadata"""
         with open(self.general.output_file, 'a+') as f:
-            print('%d\t/u/%s\t/r/%s\t%s\t%s' % (time.time(), comment.author, comment.submission.subreddit, comment.submission.over_18, verse), file=f)
+            print('%d\t/u/%s\t/r/%s\t%s\t%s\t%s' % (time.time(), comment.author, comment.submission.subreddit, comment.submission.over_18, comment.body, verse), file=f)
 
 
 def main():
