@@ -2,8 +2,6 @@ from __future__ import print_function, division
 
 import sys
 import time
-import string
-from collections import defaultdict
 
 import praw
 import yaml
@@ -11,18 +9,13 @@ import yaml
 import tweet
 import poetry
 
-# Filter table to remove all non ascii_lowercase/space characters
-filter_table = defaultdict(lambda: None)
-for c in string.ascii_lowercase:
-    filter_table[c] = unicode(c, 'utf-8')
-filter_table[ord(' ')] = u' '
-
-# Curse words 
+# Curse words
 # (shamelessly taken from github.com/Marjan-GH/Topical_poetry)
 curse_words = []
 with open('cursed_words.txt', 'r') as f:
     for l in f:
         curse_words.append(l.strip().lower())
+
 
 class Attributes(object):
     """A class to access dict fields like object attributes"""
@@ -31,7 +24,7 @@ class Attributes(object):
         self.__dict__.update(dic)
 
 
-class IambicPentameterBot(object):
+class RedditIambicPentameterBot(object):
     """A bot capable of identifying iambic pentameters in reddit comments"""
 
     def __init__(self, config_file):
@@ -53,7 +46,7 @@ class IambicPentameterBot(object):
         """Preprocess comment to get body without special characters"""
         return poetry.preprocess_verse(comment.body)
 
-    def is_iambic_pentameter(self, comment):
+    def is_iambic_pentameter(self, comment, tweet=True):
         """Check if comment is an iambic pentameter"""
         candidate = self.preprocess_comment(comment)
         # Check for length
@@ -61,15 +54,20 @@ class IambicPentameterBot(object):
             self.n_length_removed += 1
             return False
         # Check the stress pattern
-        pentameter = poetry.detect_iambic_pentameter(candidate, self.poetry.pattern, self.poetry.allow_feminine_rhyme)
+        pentameter = poetry.detect_iambic_pentameter(candidate,
+                                                     self.poetry.pattern,
+                                                     self.poetry.allow_feminine_rhyme)
         # Save the pentameter
         if pentameter:
             self.save_pentameter(comment, candidate)
-            if self.is_clean(candidate):
+            if self.is_clean(candidate) and tweet:
                 self.tweet_comment(comment)
             self.n_pentameters += 1
             self.n_pentameters_epoch += 1
-    
+            return True
+        else:
+            return False
+
     def is_clean(self, verse):
         """Checks if a verse is clean of curse words (i.e. "twitter safe")"""
         for w in verse.split():
@@ -87,12 +85,18 @@ class IambicPentameterBot(object):
     def save_pentameter(self, comment, verse):
         """Saves verse to tsv file with some metadata"""
         with open(self.general.output_file, 'a+') as f:
-            print('%d\t/u/%s\t/r/%s\t%s\t%s\t%s' % (time.time(), comment.author, comment.submission.subreddit, comment.submission.over_18, comment.body, verse), file=f)
+            print('%d' % time.time() +                          # timestamp
+                  '\t/u/%s' % comment.author +                  # author
+                  '\t/r/%s' % comment.submission.subreddit +    # subreddit
+                  '\t%s' % comment.submission.over_18 +         # nsfw tag
+                  '\t%s' % comment.body.strip() +               # comment
+                  '\t%s' % verse,                               # clean comment
+                  file=f)
 
 
 def main():
     # Instantiate bot
-    bot = IambicPentameterBot(sys.argv[1])
+    bot = RedditIambicPentameterBot(sys.argv[1])
     # Get reddit instance
     reddit = praw.Reddit(user_agent=bot.reddit.user_agent,
                          client_id=bot.reddit.client_id,
@@ -106,7 +110,9 @@ def main():
     i = 0
     for comment in subreddit.stream.comments():
         # Check if comment is and iambic pentameter
-        bot.is_iambic_pentameter(comment)
+        if bot.is_iambic_pentameter(comment):
+            # Save comments on reddit just in case
+            comment.save()
         # Stop if max number of records is reached
         if bot.n_pentameters >= bot.options.max_records:
             break
@@ -117,8 +123,11 @@ def main():
             # Print infos
             elapsed = time.time() - start
             percent_length_removed = (bot.n_length_removed) / bot.options.report_every * 100
-            print('Analyzed %d comments, %.2f%% too short/long, found %d iambic pentameters (total: %d), %.1f comments/s' %
-                  (i, percent_length_removed, bot.n_pentameters_epoch, bot.n_pentameters, i / elapsed))
+            print('Analyzed %d comments, ' % i +
+                  '%.2f%% too short/long, ' % percent_length_removed +
+                  'found %d iambic pentameters ' % bot.n_pentameters_epoch +
+                  '(total: %d), ' % bot.n_pentameters +
+                  '%.1f comments/s' % (i / elapsed))
             sys.stdout.flush()
             # Sleep a bit
             time.sleep(bot.options.sleep_for)
@@ -130,21 +139,23 @@ def main():
 
 
 def test():
-    bot = IambicPentameterBot(sys.argv[1])
+    bot = RedditIambicPentameterBot(sys.argv[1])
     # Get reddit instance
     reddit = praw.Reddit(user_agent=bot.reddit.user_agent,
                          client_id=bot.reddit.client_id,
                          client_secret=bot.reddit.secret,
                          username=bot.reddit.user_name,
                          password=bot.reddit.password)
-    # Get subreddit instance
+    # Get test comment
     test_comment = reddit.comment(id='cqmldc6')
+    # Custom iambic pentameter
     test_comment.body = 'And cafeteria of other crackers'
-    bot.is_iambic_pentameter(test_comment)
+    # Test
+    bot.is_iambic_pentameter(test_comment, tweet=False)
+
 
 if __name__ == '__main__':
     if '--test' in sys.argv:
         test()
     else:
         main()
-

@@ -6,12 +6,13 @@ import numpy.random as npr
 
 import poetry
 
+
 def load_verses(filename):
     """Load verses from dump file created by the bot"""
     verses = []
     with open(filename, 'r') as f:
         for l in f:
-            fields =  l.strip().split('\t')
+            fields = l.strip().split('\t')
             if len(fields) == 6:
                 verses.append(fields[-2].strip())
     return verses
@@ -33,7 +34,7 @@ class Poet(object):
         for k, v in self.rhymes.items():
             self.rhymes[k] = list(v)
         # Probability of picking a rhyme (based on number of such rhymes)
-        self.p_rhymes = {r:(len(v) - 1) for r, v in self.rhymes.items()}
+        self.p_rhymes = {r: (len(v) - 1) for r, v in self.rhymes.items()}
         self.names_rhymes, self.p_rhymes = zip(*self.p_rhymes.items())
         self.p_rhymes = np.asarray(self.p_rhymes, dtype=float)
         self.p_rhymes /= self.p_rhymes.sum()
@@ -46,14 +47,13 @@ class Poet(object):
             line = line[:-1] + '.'
         return line
 
-
     def find_rhyming_verse(self, rhyme, verse=None):
         """Finds a random verse that rhymes with the input"""
         # Get all rhyming verses
         rhyming_verses = self.rhymes[rhyme]
-        # Until we have a different verse 
+        # Until we have a different verse
         # if verse is None this will make sure the rhyming verse is different
-        # Sample a rhyming verse 
+        # Sample a rhyming verse
         rhyming_verse = npr.choice(rhyming_verses, size=2, replace=False)
         if self.verses[rhyming_verse[0]] == verse:
             return self.verses[rhyming_verse[1]]
@@ -75,7 +75,6 @@ class Poet(object):
         couplet[-1] = self.add_period(couplet[-1])
         # Package and ship
         return '\n'.join(couplet)
-
 
     def generate_quatrain(self):
         """Generate a quatrain"""
@@ -106,5 +105,6 @@ def main():
     poet = Poet(load_verses('iambic_pentameters.txt'))
     print(poet.generate_sonnet())
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

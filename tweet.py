@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import tweepy
-import sys
 
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
+
 
 def comment_to_tweet(comment):
     """Makes a tweet from a comment (with author/subreddit/nsfw tag)"""
@@ -15,6 +15,7 @@ def comment_to_tweet(comment):
     text = comment.body.strip()
     tweet = '%s "%s"\n\n(from %s in %s)' % (nsfw, text, user, sub)
     return tweet
+
 
 def tweet(text, twitter):
     """Sends a tweet with the given text"""
@@ -29,4 +30,3 @@ def tweet(text, twitter):
         text = text[:139] + '…'
     # Tweet
     api.update_status(text)
-

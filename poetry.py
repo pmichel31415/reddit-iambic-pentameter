@@ -3,7 +3,8 @@ import re
 
 import pronouncing as pr
 
-# An iambic pentameter has 10-11 syllables, syllables rarely have less than 2 characters and more than 3
+# An iambic pentameter has 10-11 syllables, syllables rarely have
+# less than 2 characters and more than 3
 MIN_CHARS = 15
 MAX_CHARS = 40
 
@@ -17,6 +18,7 @@ def length_ok(candidate):
     length = sum(map(len, candidate.split()))
     # Check whether the count is in [MIN_CHARS, MAX_CHARS]
     return length >= MIN_CHARS and length <= MAX_CHARS
+
 
 def preprocess_verse(verse):
     """Lowercase and filter all punctuation"""
@@ -38,14 +40,14 @@ def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rh
             # Identify type 2 stresses with type 1
             s = s.translate(two_to_one_stress)
             # Number of syllables of the word
-            l = len(s)
+            l_s = len(s)
             # Trick from (Ghazvininejad et al., 2016)
-            if l>2 and s[-3:] == '100':
+            if l_s > 2 and s[-3:] == '100':
                 s = '%s%s' % (s[:-1], '1')
             # check whether the stress patterns match
-            if l <= L and pattern.find(s, 0, l) == 0:
+            if l_s <= L and pattern.find(s, 0, l_s) == 0:
                 # if yes, reduce the target pattern and get to next word
-                pattern = pattern[l:]
+                pattern = pattern[l_s:]
                 found_pattern = True
                 break
         # If no matching stress pattern was found for this word, return false
@@ -57,12 +59,12 @@ def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rh
     # Return the iambic pentameter
     return candidate
 
+
 def verse_rhyme(verse):
     """Gets the rhyme of a verse"""
     # Get last word
     last_word = preprocess_verse(verse).split()[-1]
     # Get last two phones
     phones = pr.phones_for_word(last_word)[0].split()
-    rhyme = phones[-1] if len(phones)==1 else ''.join(phones[-2:])
+    rhyme = phones[-1] if len(phones) == 1 else ''.join(phones[-2:])
     return rhyme
-
