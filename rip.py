@@ -1,15 +1,15 @@
 from __future__ import print_function, division
+
 import sys
 import re
-
-import praw
 import time
+import string
 from collections import defaultdict
 
+import praw
 import yaml
-import tweet
-import string
 
+import tweet
 import poetry
 
 # Filter table to remove all non ascii_lowercase/space characters
@@ -18,6 +18,12 @@ for c in string.ascii_lowercase:
     filter_table[c] = unicode(c, 'utf-8')
 filter_table[ord(' ')] = u' '
 
+# Curse words 
+# (shamelessly taken from github.com/Marjan-GH/Topical_poetry)
+curse_words = []
+with open('cursed_words.txt', 'r') as f:
+    for l in f:
+        curse_words.append(l.strip().lower())
 
 class Attributes(object):
     """A class to access dict fields like object attributes"""
@@ -35,6 +41,7 @@ class IambicPentameterBot(object):
         self.n_pentameters = 0
         self.n_length_removed = 0
         self.n_pentameters_epoch = 0
+        self.last_tweet = 0
 
     def load_config(self, config_file):
         """Create fields from yaml file"""
@@ -62,9 +69,24 @@ class IambicPentameterBot(object):
         # Save the pentameter
         if pentameter:
             self.save_pentameter(comment, candidate)
-            tweet.tweet(tweet.comment_to_tweet(comment), self.twitter)
+            if self.is_clean(candidate):
+                self.tweet_comment(comment)
             self.n_pentameters += 1
             self.n_pentameters_epoch += 1
+    
+    def is_clean(self, verse):
+        """Checks if a verse is clean of curse words (i.e. "twitter safe")"""
+        for w in verse.split():
+            if w in curse_words:
+                return False
+        return True
+
+    def tweet_comment(self, comment):
+        """Tweet the comment (only every self.twitter.tweet_every)"""
+        now = time.time()
+        if now > self.last_tweet + self.twitter.tweet_every:
+            tweet.tweet(tweet.comment_to_tweet(comment), self.twitter)
+            self.last_tweet = time.time()
 
     def save_pentameter(self, comment, verse):
         """Saves verse to tsv file with some metadata"""
