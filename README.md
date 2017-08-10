@@ -1,6 +1,20 @@
 # RIP: a Reddit Iambic Pentameter bot
 
-RIP is a bot that scans new comment on the popular message board [reddit](https://www.reddit.com/r/all/) to detect iambic pentameter, one of the most famous types of verses in english poetry.
+RIP is a bot that scans new comment on the popular message board [reddit](https://www.reddit.com/r/all/) to detect iambic pentameter, one of the most famous types of verses in english poetry.>
+9
+> 
+
+Here are some funny quartains it composed
+
+    And half the toilet paper in the building.
+    Was at that final. It was a good day.
+    Can you? It would be pretty interesting.
+    The Maya are alive and well today.
+    ---
+    and pirates do a LOT of gambling!
+    Its not that hard to recognize a door.
+    That dive into the quarry looks amazing.
+    Are people even trying anymore?
 
 ## Iambic pentameters?
 
@@ -9,7 +23,9 @@ From wikipedia:
 > An iambic foot is an unstressed syllable followed by a stressed syllable. [...] A standard line of iambic pentameter is five iambic feet in a row
 
 Here's an example of a iambic pentameter that you would typically encounter on reddit:
-
+>
+9
+> 
 > this post has been removed for breaking rule 
 
 This line follows the ``0101010101`` stress pattern, here's a breakdown
