@@ -1,7 +1,6 @@
 from __future__ import print_function, division
 
 import sys
-import re
 import time
 import string
 from collections import defaultdict
@@ -52,10 +51,7 @@ class IambicPentameterBot(object):
 
     def preprocess_comment(self, comment):
         """Preprocess comment to get body without special characters"""
-        # lowercase
-        candidate = comment.body.strip().lower()
-        # Filter punctuation
-        return re.sub('[^a-z ]+', '', candidate)
+        return poetry.preprocess_verse(comment.body)
 
     def is_iambic_pentameter(self, comment):
         """Check if comment is an iambic pentameter"""

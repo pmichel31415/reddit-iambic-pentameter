@@ -1,3 +1,6 @@
+from __future__ import division
+import re
+
 import pronouncing as pr
 
 # An iambic pentameter has 10-11 syllables, syllables rarely have less than 2 characters and more than 3
@@ -14,6 +17,13 @@ def length_ok(candidate):
     length = sum(map(len, candidate.split()))
     # Check whether the count is in [MIN_CHARS, MAX_CHARS]
     return length >= MIN_CHARS and length <= MAX_CHARS
+
+def preprocess_verse(verse):
+    """Lowercase and filter all punctuation"""
+    # lowercase
+    verse_lower = verse.strip().lower()
+    # Filter punctuation
+    return re.sub('[^a-z ]+', '', verse_lower)
 
 
 def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rhyme=True):
@@ -46,3 +56,13 @@ def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rh
         return False
     # Return the iambic pentameter
     return candidate
+
+def verse_rhyme(verse):
+    """Gets the rhyme of a verse"""
+    # Get last word
+    last_word = preprocess_verse(verse).split()[-1]
+    # Get last two phones
+    phones = pr.phones_for_word(last_word)[0].split()
+    rhyme = phones[-1] if len(phones)==1 else ''.join(phones[-2:])
+    return rhyme
+

@@ -1,0 +1,110 @@
+from __future__ import division
+
+from collections import defaultdict
+import numpy as np
+import numpy.random as npr
+
+import poetry
+
+def load_verses(filename):
+    """Load verses from dump file created by the bot"""
+    verses = []
+    with open(filename, 'r') as f:
+        for l in f:
+            fields =  l.strip().split('\t')
+            if len(fields) == 6:
+                verses.append(fields[-2].strip())
+    return verses
+
+
+class Poet(object):
+    """Composes poems (yeah...)"""
+
+    def __init__(self, verses):
+        """Set up the collection of verses"""
+        self.verses = verses
+        self.n_verses = len(verses)
+        # Store the verses by rhyme
+        self.rhymes = defaultdict(lambda: set())
+        for i, verse in enumerate(verses):
+            self.rhymes[poetry.verse_rhyme(verse)].add(i)
+        # Total number of rhymes
+        self.n_rhymes = len(self.rhymes)
+        for k, v in self.rhymes.items():
+            self.rhymes[k] = list(v)
+        # Probability of picking a rhyme (based on number of such rhymes)
+        self.p_rhymes = {r:(len(v) - 1) for r, v in self.rhymes.items()}
+        self.names_rhymes, self.p_rhymes = zip(*self.p_rhymes.items())
+        self.p_rhymes = np.asarray(self.p_rhymes, dtype=float)
+        self.p_rhymes /= self.p_rhymes.sum()
+
+    def add_period(self, line):
+        """Adds a period at the end of line"""
+        if not line[-1] in '.,!?;':
+            line = line + '.'
+        elif line[-1] in ',:;':
+            line = line[:-1] + '.'
+        return line
+
+
+    def find_rhyming_verse(self, rhyme, verse=None):
+        """Finds a random verse that rhymes with the input"""
+        # Get all rhyming verses
+        rhyming_verses = self.rhymes[rhyme]
+        # Until we have a different verse 
+        # if verse is None this will make sure the rhyming verse is different
+        # Sample a rhyming verse 
+        rhyming_verse = npr.choice(rhyming_verses, size=2, replace=False)
+        if self.verses[rhyming_verse[0]] == verse:
+            return self.verses[rhyming_verse[1]]
+        return self.verses[rhyming_verse[0]]
+
+    def sample_rhyming_pair(self, rhyme):
+        """Sample a pair of rhyming verses"""
+        first_verse = self.find_rhyming_verse(rhyme)
+        second_verse = self.find_rhyming_verse(rhyme, verse=first_verse)
+        return [first_verse, second_verse]
+
+    def generate_couplet(self):
+        """Generates a couplet"""
+        # Sample rhymes
+        a = npr.choice(self.names_rhymes, p=self.p_rhymes)
+        # Get verses
+        couplet = self.sample_rhyming_pair(a)
+        # Add period at the end
+        couplet[-1] = self.add_period(couplet[-1])
+        # Package and ship
+        return '\n'.join(couplet)
+
+
+    def generate_quatrain(self):
+        """Generate a quatrain"""
+        # Sample rhymes
+        a, b = npr.choice(self.names_rhymes, size=2, replace=False, p=self.p_rhymes)
+        # Get verses
+        quatrain = [""] * 4
+        quatrain[0], quatrain[2] = self.sample_rhyming_pair(a)
+        quatrain[1], quatrain[3] = self.sample_rhyming_pair(b)
+        # Add period at the end
+        quatrain[-1] = self.add_period(quatrain[-1])
+        # Package and ship
+        return '\n'.join(quatrain)
+
+    def generate_sonnet(self):
+        """Generates a sonnet"""
+        # A sonnet is 3 quatrains and one couplet
+        sonnet = [""] * 4
+        sonnet[0] = self.generate_quatrain()
+        sonnet[1] = self.generate_quatrain()
+        sonnet[2] = self.generate_quatrain()
+        sonnet[3] = self.generate_couplet()
+        # Package and ship
+        return '\n\n'.join(sonnet)
+
+
+def main():
+    poet = Poet(load_verses('iambic_pentameters.txt'))
+    print(poet.generate_sonnet())
+
+if __name__=='__main__':
+    main()
