@@ -1,5 +1,7 @@
 <div align="center">
-  <img src="logo.jpg" width="100px">
+  <a href="https://pmichel31415.github.io/reddit-iambic-pentameter/">
+    <img src="logo.png" width="100px">
+  </a>
 </div>
 
 #  [RIP: a Reddit Iambic Pentameter bot](https://pmichel31415.github.io/reddit-iambic-pentameter/)
