@@ -22,6 +22,12 @@ Here are some funny quartains it composed
     That dive into the quarry looks amazing.
     Are people even trying anymore?
 
+RIP tweets an Iambic pentameter found on twitter every hour, follow him:
+
+
+<a class="twitter-timeline" href="https://twitter.com/R_I_P_bot">Tweets by @R_I_P_bot</a> 
+
+
 ## Iambic pentameters?
 
 From wikipedia:
