@@ -24,8 +24,8 @@ def preprocess_verse(verse):
     """Lowercase and filter all punctuation"""
     # lowercase
     verse_lower = verse.strip().lower()
-    # Filter punctuation
-    return re.sub('[^a-z ]+', '', verse_lower)
+    # Filter punctuation (keep numbers)
+    return re.sub('[^a-z \d]+', '', verse_lower)
 
 
 def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rhyme=True):

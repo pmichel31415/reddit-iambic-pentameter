@@ -108,7 +108,7 @@ def main():
     for comment in subreddit.stream.comments():
         # Check if comment is and iambic pentameter
         try:
-            if bot.is_iambic_pentameter(comment, tweet=False):
+            if bot.is_iambic_pentameter(comment):
                 # Save comments on reddit just in case
                 comment.save()
         except Exception, e:
