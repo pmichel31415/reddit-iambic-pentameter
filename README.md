@@ -4,7 +4,7 @@
   </a>
 </div>
 
-#  [RIP: a Reddit Iambic Pentameter bot](https://pmichel31415.github.io/reddit-iambic-pentameter/)
+#  [RIP: Reddit Iambic Pentameters](https://pmichel31415.github.io/reddit-iambic-pentameter/)
 
 RIP is a bot that scans new comment on the popular message board [reddit](https://www.reddit.com/r/all/) to detect iambic pentameter, one of the most famous types of verses in english poetry.>
 9
