@@ -110,9 +110,12 @@ def main():
     i = 0
     for comment in subreddit.stream.comments():
         # Check if comment is and iambic pentameter
-        if bot.is_iambic_pentameter(comment):
-            # Save comments on reddit just in case
-            comment.save()
+        try:
+            if bot.is_iambic_pentameter(comment):
+                # Save comments on reddit just in case
+                comment.save()
+        except Exception, e:
+            print("Failed to process comment: " + str(e), file=sys.stderr)
         # Stop if max number of records is reached
         if bot.n_pentameters >= bot.options.max_records:
             break
