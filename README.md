@@ -24,10 +24,7 @@ Here are some funny quartains it composed
 
 RIP tweets an Iambic pentameter found on twitter every hour, follow him:
 
-
 <a class="twitter-timeline" href="https://twitter.com/R_I_P_bot">Tweets by @R_I_P_bot</a> 
-
-![<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>](white.png)
 
 ## Iambic pentameters?
 
