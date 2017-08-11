@@ -1,21 +1,13 @@
-from __future__ import division
+from __future__ import print_function, division
 
+import sys
 from collections import defaultdict
 import numpy as np
 import numpy.random as npr
 
 import poetry
-
-
-def load_verses(filename):
-    """Load verses from dump file created by the bot"""
-    verses = []
-    with open(filename, 'r') as f:
-        for l in f:
-            fields = l.strip().split('\t')
-            if len(fields) == 6:
-                verses.append(fields[-2].strip())
-    return verses
+import curse
+import image
 
 
 class Poet(object):
@@ -101,9 +93,29 @@ class Poet(object):
         return '\n\n'.join(sonnet)
 
 
+def load_verses(filename):
+    """Load verses from dump file created by the bot"""
+    verses = []
+    with open(filename, 'r') as f:
+        for l in f:
+            fields = l.strip().split('\t')
+            if len(fields) == 6:
+                if curse.is_clean(fields[-1]):
+                    verses.append(fields[-2].strip())
+    return verses
+
+
 def main():
-    poet = Poet(load_verses('iambic_pentameters.txt'))
-    print(poet.generate_sonnet())
+    source_file = sys.argv[1]
+    mode = sys.argv[2]
+    poet = Poet(load_verses(source_file))
+    if mode == 'text':
+        print(poet.generate_sonnet())
+    elif mode == 'image':
+        image.make_image(poet.generate_quatrain(), output_file=sys.argv[3])
+    else:
+        print('mode %s not recognized. Here, get a couplet for free:\n' % mode, file=sys.stderr)
+        print(poet.generate_couplet(), file=sys.stderr)
 
 
 if __name__ == '__main__':

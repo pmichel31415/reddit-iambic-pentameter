@@ -2,19 +2,14 @@ from __future__ import print_function, division
 
 import sys
 import time
+import curse
+from subprocess import check_output
 
 import praw
 import yaml
 
 import tweet
 import poetry
-
-# Curse words
-# (shamelessly taken from github.com/Marjan-GH/Topical_poetry)
-curse_words = []
-with open('cursed_words.txt', 'r') as f:
-    for l in f:
-        curse_words.append(l.strip().lower())
 
 
 class Attributes(object):
@@ -60,20 +55,13 @@ class RedditIambicPentameterBot(object):
         # Save the pentameter
         if pentameter:
             self.save_pentameter(comment, candidate)
-            if self.is_clean(candidate) and tweet:
+            if curse.is_clean(candidate) and tweet:
                 self.tweet_comment(comment)
             self.n_pentameters += 1
             self.n_pentameters_epoch += 1
             return True
         else:
             return False
-
-    def is_clean(self, verse):
-        """Checks if a verse is clean of curse words (i.e. "twitter safe")"""
-        for w in verse.split():
-            if w in curse_words:
-                return False
-        return True
 
     def tweet_comment(self, comment):
         """Tweet the comment (only every self.twitter.tweet_every)"""
@@ -93,6 +81,14 @@ class RedditIambicPentameterBot(object):
                   '\t%s' % verse,                               # clean comment
                   file=f)
 
+    def tweet_quatrain(self):
+        """Tweet an image of a quatrain occasionaly"""
+        now = time.time()
+        if now > self.last_tweet + self.twitter.tweet_every:
+            check_output(["python", "poet.py", self.general.output_file, "image", 'tmp.png'])
+            tweet.tweet_image('tmp.png', self.twitter)
+            self.last_tweet = time.time()
+
 
 def main():
     # Instantiate bot
@@ -111,7 +107,7 @@ def main():
     for comment in subreddit.stream.comments():
         # Check if comment is and iambic pentameter
         try:
-            if bot.is_iambic_pentameter(comment):
+            if bot.is_iambic_pentameter(comment, tweet=False):
                 # Save comments on reddit just in case
                 comment.save()
         except Exception, e:
@@ -139,6 +135,11 @@ def main():
             bot.n_pentameters_epoch = 0
             i = 0
             start = time.time()
+        # Occasionally tweet a quatrain
+        try:
+            bot.tweet_quatrain()
+        except Exception, e:
+            print("Failed to tweet " + str(e), file=sys.stderr)
 
 
 def test():
