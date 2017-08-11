@@ -29,6 +29,7 @@ class RedditIambicPentameterBot(object):
         self.n_length_removed = 0
         self.n_pentameters_epoch = 0
         self.last_tweet = 0
+        self.last_quatrain_tweet = 0
 
     def load_config(self, config_file):
         """Create fields from yaml file"""
@@ -84,10 +85,10 @@ class RedditIambicPentameterBot(object):
     def tweet_quatrain(self):
         """Tweet an image of a quatrain occasionaly"""
         now = time.time()
-        if now > self.last_tweet + self.twitter.tweet_every:
+        if now > self.last_quatrain_tweet + self.twitter.tweet_quatrain_every:
             check_output(["python", "poet.py", self.general.output_file, "image", 'tmp.png'])
             tweet.tweet_image('tmp.png', self.twitter)
-            self.last_tweet = time.time()
+            self.last_quatrain_tweet = time.time()
 
 
 def main():
