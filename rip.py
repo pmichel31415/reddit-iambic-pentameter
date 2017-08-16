@@ -30,6 +30,7 @@ class RedditIambicPentameterBot(object):
         self.n_pentameters_epoch = 0
         self.last_tweet = 0
         self.last_quatrain_tweet = 0
+        self.start = time.time()
 
     def load_config(self, config_file):
         """Create fields from yaml file"""
@@ -37,6 +38,12 @@ class RedditIambicPentameterBot(object):
             data = yaml.load(f)
             for k, v in data.items():
                 self.__dict__[k] = Attributes(v)
+                
+    def tick(self):
+        """Get time since last call"""
+        elapsed = time.time() - self.start
+        self.start = time.time()
+        return elapsed
 
     def preprocess_comment(self, comment):
         """Preprocess comment to get body without special characters"""
@@ -89,7 +96,57 @@ class RedditIambicPentameterBot(object):
             check_output(["python", "poet.py", self.general.output_file, "image", 'tmp.png'])
             tweet.tweet_image('tmp.png', self.twitter)
             self.last_quatrain_tweet = time.time()
+            
+    def is_done(self):
+        """Returns true if the bot has found `max_records` pentameters"""
+        return self.n_pentameters >= self.options.max_records
 
+    def process_comment(self, comment):
+        """Processes a reddit comment object. Returns True when no more comment should be processed"""
+        # Check for iambic pentameters
+        try:
+            if self.is_iambic_pentameter(comment):
+                # Save comments on reddit just in case
+                comment.save()
+        except Exception, e:
+            print("Failed to process comment: " + str(e), file=sys.stderr)
+        # Stop if max number of records is reached
+        return self.is_done()
+
+def main_loop(bot, subreddit):
+    """Main loop for the bot"""
+    # Start looping
+    i = 0
+    bot.tick()
+    for comment in subreddit.stream.comments():
+        # Check if comment is and iambic pentameter
+        done = bot.process_comment(comment)
+        # If enough commebts have been processed, kill the procgram
+        if done:
+            exit()
+        # Increment counter
+        i += 1
+        # Report periodically
+        if i >= bot.options.report_every:
+            # Print infos
+            percent_length_removed = (bot.n_length_removed) / bot.options.report_every * 100
+            print('Analyzed %d comments, ' % i +
+                  '%.2f%% too short/long, ' % percent_length_removed +
+                  'found %d iambic pentameters ' % bot.n_pentameters_epoch +
+                  '(total: %d), ' % bot.n_pentameters +
+                  '%.1f comments/s' % (i / bot.tick()))
+            sys.stdout.flush()
+            # Sleep a bit
+            time.sleep(bot.options.sleep_for)
+            # Reset periodic counters
+            bot.n_length_removed = 0
+            bot.n_pentameters_epoch = 0
+            i = 0
+        # Occasionally tweet a quatrain
+        try:
+            bot.tweet_quatrain()
+        except Exception, e:
+            print("Failed to tweet " + str(e), file=sys.stderr)
 
 def main():
     # Instantiate bot
@@ -102,45 +159,13 @@ def main():
                          password=bot.reddit.password)
     # Get subreddit instance
     subreddit = reddit.subreddit(bot.reddit.subreddit)
-    # Start looping
-    start = time.time()
-    i = 0
-    for comment in subreddit.stream.comments():
-        # Check if comment is and iambic pentameter
+    # Run in while loop to recover from unknown exceptions
+    while True:
         try:
-            if bot.is_iambic_pentameter(comment):
-                # Save comments on reddit just in case
-                comment.save()
+            # Run main loop
+            main_loop(bot, subreddit)
         except Exception, e:
-            print("Failed to process comment: " + str(e), file=sys.stderr)
-        # Stop if max number of records is reached
-        if bot.n_pentameters >= bot.options.max_records:
-            break
-        # Increment counter
-        i += 1
-        # Report periodically
-        if i >= bot.options.report_every:
-            # Print infos
-            elapsed = time.time() - start
-            percent_length_removed = (bot.n_length_removed) / bot.options.report_every * 100
-            print('Analyzed %d comments, ' % i +
-                  '%.2f%% too short/long, ' % percent_length_removed +
-                  'found %d iambic pentameters ' % bot.n_pentameters_epoch +
-                  '(total: %d), ' % bot.n_pentameters +
-                  '%.1f comments/s' % (i / elapsed))
-            sys.stdout.flush()
-            # Sleep a bit
-            time.sleep(bot.options.sleep_for)
-            # Reset periodic counters
-            bot.n_length_removed = 0
-            bot.n_pentameters_epoch = 0
-            i = 0
-            start = time.time()
-        # Occasionally tweet a quatrain
-        try:
-            bot.tweet_quatrain()
-        except Exception, e:
-            print("Failed to tweet " + str(e), file=sys.stderr)
+            print('Unknown error: ' + str(e), file=sys.stderr)
 
 
 def test():
