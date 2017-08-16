@@ -65,6 +65,10 @@ def verse_rhyme(verse):
     # Get last word
     last_word = preprocess_verse(verse).split()[-1]
     # Get last two phones
-    phones = pr.phones_for_word(last_word)[0].split()
-    rhyme = phones[-1] if len(phones) == 1 else ''.join(phones[-2:])
-    return rhyme
+    phones = pr.phones_for_word(last_word)[0]
+    last = re.match('.+ ([a-zA-Z]+[0-9][^0-9]*)$', phones)
+    if last:
+        rhyme = last.group(1)#phones[-1] if len(phones) == 1 else ''.join(phones[-2:])
+        return rhyme
+    else:
+        return phones
