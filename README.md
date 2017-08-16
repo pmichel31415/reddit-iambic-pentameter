@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://pmichel31415.github.io/reddit-iambic-pentameter/">
-    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/logo.png" width="100px">
+    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/logo.gif" width="100px">
   </a>
 </div>
 
