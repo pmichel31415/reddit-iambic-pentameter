@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://pmichel31415.github.io/reddit-iambic-pentameter/">
-    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/logo.png" width="100px">
+    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/logo.gif" width="100px">
   </a>
 </div>
 
@@ -24,9 +24,7 @@ Here are some funny quartains it composed
 
 RIP tweets an Iambic pentameter found on twitter every hour, follow him:
 
-
 <a class="twitter-timeline" href="https://twitter.com/R_I_P_bot">Tweets by @R_I_P_bot</a> 
-
 
 ## Iambic pentameters?
 
