@@ -33,15 +33,13 @@ From wikipedia:
 > An iambic foot is an unstressed syllable followed by a stressed syllable. [...] A standard line of iambic pentameter is five iambic feet in a row
 
 Here's an example of a iambic pentameter that you would typically encounter on reddit:
->
-9
-> 
-> this post has been removed for breaking rule 
+
+> That second post was hard to understand 
 
 This line follows the ``0101010101`` stress pattern, here's a breakdown
 
-	this | post | has | been | re | moved | for | brea | king | rule
-	 0   |  1   |  0  |  1   | 0  |   1   |  0  |  1   |  0   |  1   
+    That | se | cond | post | was | hard | to | un | der | stand
+      0    1     0      1      0     1     0    1     0      1  
 	 
 ## Requirements
 
