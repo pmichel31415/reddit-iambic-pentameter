@@ -16,7 +16,8 @@ class TitleGenerator(object):
     """Generates the title of a poem"""
 
     def __init__(self):
-        pass
+        # Init spacy
+        self.nlp = spacy.load('en')
 
     def initialize(self, nouns_file, adjs_file, determinants=DETERMINANTS, tau=1.0):
         # Save temperature
@@ -25,18 +26,16 @@ class TitleGenerator(object):
         self.nouns = util.load_wordlist(nouns_file)
         # Load adjectives
         self.adjs = util.load_wordlist(adjs_file)
-        # Init spacy
-        self.nlp = spacy.load('en')
         # Noun vectors
         self.noun_vectors = np.zeros((len(self.nouns), self.nlp.vocab.vectors_length))
         for i, noun in enumerate(self.nouns):
             tok = self.nlp(noun.decode('utf-8'))
-            self.noun_vectors[i] = tok.vector / tok.vector_norm
+            self.noun_vectors[i] = tok.vector / tok.vector_norm if tok.vector_norm > 0 else 0
         # Adjectives vectors
         self.adj_vectors = np.zeros((len(self.adjs), self.nlp.vocab.vectors_length))
         for i, adj in enumerate(self.adjs):
             tok = self.nlp(adj.decode('utf-8'))
-            self.adj_vectors[i] = tok.vector / tok.vector_norm
+            self.adj_vectors[i] = tok.vector / tok.vector_norm if tok.vector_norm > 0 else 0
 
     def poem_vector(self, poem):
         """Creates a poem vector"""
@@ -65,10 +64,15 @@ class TitleGenerator(object):
         return det + adj + " " + noun
 
     def save(self, filename):
-        np.savez(filename, self.nouns, self.noun_vectors, self.adjs, self.adj_vectors)
+        np.savez(filename,
+                 nouns=self.nouns,
+                 noun_vectors=self.noun_vectors,
+                 adjs=self.adjs,
+                 adj_vectors=self.adj_vectors,
+                 tau=self.tau)
 
     def load(self, filename):
-        self.nouns, self.noun_vectors, self.adjs, self.adj_vectors = np.load(filename)
+        self.__dict__.update(np.load(filename).items())
 
 
 def get_title_generator(options):
@@ -77,4 +81,5 @@ def get_title_generator(options):
         tg.load(options.filename)
     else:
         tg.initialize(options.nouns_file, options.adjs_file, DETERMINANTS, options.tau)
+        tg.save(options.filename)
     return tg
