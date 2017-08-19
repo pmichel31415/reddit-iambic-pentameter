@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function, division
 
 import sys
@@ -5,21 +6,26 @@ from collections import defaultdict
 import numpy as np
 import numpy.random as npr
 
+import util
 import poetry
 import curse
 import image
+import title
 
 
 class Poet(object):
     """Composes poems (yeah...)"""
 
-    def __init__(self, verses):
-        """Set up the collection of verses"""
-        self.verses = verses
-        self.n_verses = len(verses)
+    def __init__(self, config_file):
+        """Constructor"""
+        # Load options
+        util.load_config(self, config_file)
+        # Set up the collection of verses
+        self.verses = load_verses(self.general.output_file)
+        self.n_verses = len(self.verses)
         # Store the verses by rhyme
         self.rhymes = defaultdict(lambda: set())
-        for i, verse in enumerate(verses):
+        for i, verse in enumerate(self.verses):
             self.rhymes[poetry.verse_rhyme(verse)].add(i)
         # Total number of rhymes
         self.n_rhymes = len(self.rhymes)
@@ -30,6 +36,8 @@ class Poet(object):
         self.names_rhymes, self.p_rhymes = zip(*self.p_rhymes.items())
         self.p_rhymes = np.asarray(self.p_rhymes, dtype=float)
         self.p_rhymes /= self.p_rhymes.sum()
+        # Title generator
+        self.tg = title.get_title_generator(self.title)
 
     def add_period(self, line):
         """Adds a period at the end of line"""
@@ -92,6 +100,16 @@ class Poet(object):
         # Package and ship
         return '\n\n'.join(sonnet)
 
+    def generate_title(self, poem):
+        """Generate a title for the poem"""
+        return self.tg(poem)
+
+    def add_title(self, poem):
+        """Generate a title and prepend it to the string"""
+        t = self.generate_title(poem)
+        sep = "\n%s\n" % "".join(["-"] * len(t))
+        return t + sep + poem
+
 
 def load_verses(filename):
     """Load verses from dump file created by the bot"""
@@ -106,13 +124,17 @@ def load_verses(filename):
 
 
 def main():
-    source_file = sys.argv[1]
+    config_file = sys.argv[1]
     mode = sys.argv[2]
-    poet = Poet(load_verses(source_file))
+    poet = Poet(config_file)
     if mode == 'text':
-        print(poet.generate_sonnet())
+        sonnet = poet.generate_sonnet()
+        sonnet = poet.add_title(sonnet)
+        print(sonnet)
     elif mode == 'image':
-        image.make_image(poet.generate_quatrain(), output_file=sys.argv[3])
+        quatrain = poet.generate_quatrain()
+        quatrain = poet.add_title(quatrain)
+        image.make_image(quatrain, output_file=sys.argv[3])
     else:
         print('mode %s not recognized. Here, get a couplet for free:\n' % mode, file=sys.stderr)
         print(poet.generate_couplet(), file=sys.stderr)

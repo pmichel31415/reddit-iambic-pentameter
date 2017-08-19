@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 import tweepy
 
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 
 def comment_to_tweet(comment):
     """Makes a tweet from a comment (with author/subreddit/nsfw tag)"""

@@ -22,3 +22,9 @@ options:
 poetry:
   pattern: "01010101010"
   allow_feminine_rhyme: True
+title:
+  filename: "titlegen.npz"
+  type: "word_vectors"
+  nouns_file: "nouns.txt"
+  adjs_file: "adjs.txt"
+  tau: 1.0

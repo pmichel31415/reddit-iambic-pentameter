@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Curse words
 # (shamelessly taken from github.com/Marjan-GH/Topical_poetry)
 curse_words = set()
