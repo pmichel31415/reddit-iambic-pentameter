@@ -5,17 +5,22 @@ from collections import defaultdict
 import numpy as np
 import numpy.random as npr
 
+import util
 import poetry
 import curse
 import image
+import title
 
 
 class Poet(object):
     """Composes poems (yeah...)"""
 
-    def __init__(self, verses):
-        """Set up the collection of verses"""
-        self.verses = verses
+    def __init__(self, verses, title_options=None, config_file=None):
+        """Constructor"""
+        # Load options
+        util.load_config(self, config_file)
+        # Set up the collection of verses
+        self.verses = load_verses(self.general.output_file)
         self.n_verses = len(verses)
         # Store the verses by rhyme
         self.rhymes = defaultdict(lambda: set())
@@ -30,6 +35,8 @@ class Poet(object):
         self.names_rhymes, self.p_rhymes = zip(*self.p_rhymes.items())
         self.p_rhymes = np.asarray(self.p_rhymes, dtype=float)
         self.p_rhymes /= self.p_rhymes.sum()
+        # Title generator
+        self.tg = title.get_title_generator(self.title)
 
     def add_period(self, line):
         """Adds a period at the end of line"""
@@ -91,6 +98,10 @@ class Poet(object):
         sonnet[3] = self.generate_couplet()
         # Package and ship
         return '\n\n'.join(sonnet)
+
+    def generate_title(self, poem):
+        """Generate a title for the poem"""
+        return self.tg(poem)
 
 
 def load_verses(filename):

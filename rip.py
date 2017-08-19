@@ -6,17 +6,10 @@ import curse
 from subprocess import check_output
 
 import praw
-import yaml
 
+import util
 import tweet
 import poetry
-
-
-class Attributes(object):
-    """A class to access dict fields like object attributes"""
-
-    def __init__(self, dic):
-        self.__dict__.update(dic)
 
 
 class RedditIambicPentameterBot(object):
@@ -24,7 +17,7 @@ class RedditIambicPentameterBot(object):
 
     def __init__(self, config_file):
         """Init from yaml"""
-        self.load_config(config_file)
+        util.load_config(self, config_file)
         self.n_pentameters = 0
         self.n_length_removed = 0
         self.n_pentameters_epoch = 0
@@ -32,13 +25,6 @@ class RedditIambicPentameterBot(object):
         self.last_quatrain_tweet = 0
         self.start = time.time()
 
-    def load_config(self, config_file):
-        """Create fields from yaml file"""
-        with open(config_file, 'r') as f:
-            data = yaml.load(f)
-            for k, v in data.items():
-                self.__dict__[k] = Attributes(v)
-                
     def tick(self):
         """Get time since last call"""
         elapsed = time.time() - self.start
@@ -96,22 +82,25 @@ class RedditIambicPentameterBot(object):
             check_output(["python", "poet.py", self.general.output_file, "image", 'tmp.png'])
             tweet.tweet_image('tmp.png', self.twitter)
             self.last_quatrain_tweet = time.time()
-            
+
     def is_done(self):
         """Returns true if the bot has found `max_records` pentameters"""
         return self.n_pentameters >= self.options.max_records
 
     def process_comment(self, comment):
-        """Processes a reddit comment object. Returns True when no more comment should be processed"""
+        """Processes a reddit comment object
+
+        Returns True when no more comment should be processed"""
         # Check for iambic pentameters
         try:
             if self.is_iambic_pentameter(comment):
                 # Save comments on reddit just in case
                 comment.save()
-        except Exception, e:
+        except Exception as e:
             print("Failed to process comment: " + str(e), file=sys.stderr)
         # Stop if max number of records is reached
         return self.is_done()
+
 
 def main_loop(bot, subreddit):
     """Main loop for the bot"""
@@ -145,8 +134,9 @@ def main_loop(bot, subreddit):
         # Occasionally tweet a quatrain
         try:
             bot.tweet_quatrain()
-        except Exception, e:
+        except Exception as e:
             print("Failed to tweet " + str(e), file=sys.stderr)
+
 
 def main():
     # Instantiate bot
@@ -164,7 +154,7 @@ def main():
         try:
             # Run main loop
             main_loop(bot, subreddit)
-        except Exception, e:
+        except Exception as e:
             print('Unknown error: ' + str(e), file=sys.stderr)
 
 
