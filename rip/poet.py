@@ -47,6 +47,7 @@ class Poet(object):
             line = line[:-1] + '.'
         return line
 
+
     def find_rhyming_verse(self, rhyme, verse=None):
         """Finds a random verse that rhymes with the input"""
         # Get all rhyming verses
@@ -54,10 +55,14 @@ class Poet(object):
         # Until we have a different verse
         # if verse is None this will make sure the rhyming verse is different
         # Sample a rhyming verse
-        rhyming_verse = npr.choice(rhyming_verses, size=2, replace=False)
-        if self.verses[rhyming_verse[0]] == verse:
-            return self.verses[rhyming_verse[1]]
-        return self.verses[rhyming_verse[0]]
+        num_candidates = min(4, len(rhyming_verses))
+        candidate_ids = npr.choice(rhyming_verses, size=num_candidates, replace=False)
+        candidates = [self.verses[i] for i in candidate_ids]
+        if verse is not None:
+            for v in candidates:
+                if poetry.last_word(verse) != poetry.last_word(v):
+                    return v
+        return candidates[-1] 
 
     def sample_rhyming_pair(self, rhyme):
         """Sample a pair of rhyming verses"""
