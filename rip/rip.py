@@ -6,8 +6,6 @@ import time
 import curse
 from subprocess import check_output
 
-import praw
-
 import util
 import tweet
 import poetry
@@ -18,6 +16,7 @@ class RedditIambicPentameterBot(object):
 
     def __init__(self, config_file):
         """Init from yaml"""
+        self.config_file = config_file
         util.load_config(self, config_file)
         self.n_pentameters = 0
         self.n_length_removed = 0
@@ -68,19 +67,19 @@ class RedditIambicPentameterBot(object):
     def save_pentameter(self, comment, verse):
         """Saves verse to tsv file with some metadata"""
         with open(self.general.output_file, 'a+') as f:
-            print('%d' % time.time() +                          # timestamp
-                  '\t/u/%s' % comment.author +                  # author
-                  '\t/r/%s' % comment.submission.subreddit +    # subreddit
-                  '\t%s' % comment.submission.over_18 +         # nsfw tag
-                  '\t%s' % comment.body.strip() +               # comment
-                  '\t%s' % verse,                               # clean comment
+            print('%d' % time.time() +                              # timestamp
+                  '\t/u/%s' % comment.author +                      # author
+                  '\t/r/%s' % comment.submission.subreddit +        # subreddit
+                  '\t%s' % comment.submission.over_18 +             # nsfw tag
+                  '\t%s' % comment.body.strip().replace('\n', '') + # comment
+                  '\t%s' % verse,                                   # clean comment
                   file=f)
 
     def tweet_quatrain(self):
         """Tweet an image of a quatrain occasionaly"""
         now = time.time()
         if now > self.last_quatrain_tweet + self.twitter.tweet_quatrain_every:
-            check_output(["python", "poet.py", self.general.output_file, "image", 'tmp.png'])
+            check_output(["python", "rip/poet.py", self.config_file, "image", 'tmp.png'])
             tweet.tweet_image('tmp.png', self.twitter)
             self.last_quatrain_tweet = time.time()
 
@@ -101,82 +100,3 @@ class RedditIambicPentameterBot(object):
             print("Failed to process comment: " + str(e), file=sys.stderr)
         # Stop if max number of records is reached
         return self.is_done()
-
-
-def main_loop(bot, subreddit):
-    """Main loop for the bot"""
-    # Start looping
-    i = 0
-    bot.tick()
-    for comment in subreddit.stream.comments():
-        # Check if comment is and iambic pentameter
-        done = bot.process_comment(comment)
-        # If enough commebts have been processed, kill the procgram
-        if done:
-            exit()
-        # Increment counter
-        i += 1
-        # Report periodically
-        if i >= bot.options.report_every:
-            # Print infos
-            percent_length_removed = (bot.n_length_removed) / bot.options.report_every * 100
-            print('Analyzed %d comments, ' % i +
-                  '%.2f%% too short/long, ' % percent_length_removed +
-                  'found %d iambic pentameters ' % bot.n_pentameters_epoch +
-                  '(total: %d), ' % bot.n_pentameters +
-                  '%.1f comments/s' % (i / bot.tick()))
-            sys.stdout.flush()
-            # Sleep a bit
-            time.sleep(bot.options.sleep_for)
-            # Reset periodic counters
-            bot.n_length_removed = 0
-            bot.n_pentameters_epoch = 0
-            i = 0
-        # Occasionally tweet a quatrain
-        try:
-            bot.tweet_quatrain()
-        except Exception as e:
-            print("Failed to tweet " + str(e), file=sys.stderr)
-
-
-def main():
-    # Instantiate bot
-    bot = RedditIambicPentameterBot(sys.argv[1])
-    # Get reddit instance
-    reddit = praw.Reddit(user_agent=bot.reddit.user_agent,
-                         client_id=bot.reddit.client_id,
-                         client_secret=bot.reddit.secret,
-                         username=bot.reddit.user_name,
-                         password=bot.reddit.password)
-    # Get subreddit instance
-    subreddit = reddit.subreddit(bot.reddit.subreddit)
-    # Run in while loop to recover from unknown exceptions
-    while True:
-        try:
-            # Run main loop
-            main_loop(bot, subreddit)
-        except Exception as e:
-            print('Unknown error: ' + str(e), file=sys.stderr)
-
-
-def test():
-    bot = RedditIambicPentameterBot(sys.argv[1])
-    # Get reddit instance
-    reddit = praw.Reddit(user_agent=bot.reddit.user_agent,
-                         client_id=bot.reddit.client_id,
-                         client_secret=bot.reddit.secret,
-                         username=bot.reddit.user_name,
-                         password=bot.reddit.password)
-    # Get test comment
-    test_comment = reddit.comment(id='cqmldc6')
-    # Custom iambic pentameter
-    test_comment.body = 'And cafeteria of other crackers'
-    # Test
-    bot.is_iambic_pentameter(test_comment, tweet=False)
-
-
-if __name__ == '__main__':
-    if '--test' in sys.argv:
-        test()
-    else:
-        main()
