@@ -45,16 +45,19 @@ This line follows the ``0101010101`` stress pattern, here's a breakdown
 	 
 ## Requirements
 
-This project requires 3 packages to function, ``praw`` for the reddit API, ``pyyaml`` to read the yaml config file and ``pronouncing`` to get the stress pattern of words.
+RIP requires a bunch of packages to run:
 
-    PyYAML>=3.12
-    praw>=5.0.1
-    pronouncing>=0.1.5
-
+    numpy>=1.11.0       # For all the math and random number generation
+    spacy>=1.8.2        # For the title generation (POS tagging, word vectors)
+    tweepy>=3.5.0       # Interface to the twitter API
+    PyYAML>=3.12        # For the yaml config files
+    praw>=5.0.1         # Interface to the reddit API
+    pronouncing>=0.1.5  # To get rhyme/stress patterns in words
+    
 ## Usage
 
 Modify the config file to set your bot's details. Then just run
 
 ```bash
-python rip.py config.yaml
+python run.py config.yaml
 ```
