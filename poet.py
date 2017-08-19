@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function, division
 
 import sys
@@ -15,7 +16,7 @@ import title
 class Poet(object):
     """Composes poems (yeah...)"""
 
-    def __init__(self, config_file): 
+    def __init__(self, config_file):
         """Constructor"""
         # Load options
         util.load_config(self, config_file)
@@ -124,9 +125,7 @@ def load_verses(filename):
 
 def main():
     config_file = sys.argv[1]
-    # source_file = sys.argv[1]
     mode = sys.argv[2]
-    #poet = Poet(load_verses(source_file))
     poet = Poet(config_file)
     if mode == 'text':
         sonnet = poet.generate_sonnet()

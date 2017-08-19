@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import re
 
@@ -68,7 +69,7 @@ def verse_rhyme(verse):
     phones = pr.phones_for_word(last_word)[0]
     last = re.match('.+ ([a-zA-Z]+[0-9][^0-9]*)$', phones)
     if last:
-        rhyme = last.group(1)#phones[-1] if len(phones) == 1 else ''.join(phones[-2:])
+        rhyme = last.group(1)
         return rhyme
     else:
         return phones

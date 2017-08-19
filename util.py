@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function, division
 
+import numpy as np
 import yaml
 
 
@@ -16,3 +18,18 @@ def load_config(obj, config_file):
         data = yaml.load(f)
         for k, v in data.items():
             obj.__dict__[k] = Attributes(v)
+
+
+def load_wordlist(filename):
+    """Load a list of word from a file (one word per line)"""
+    words = []
+    with open(filename, 'r') as f:
+        for line in f:
+            words.append(line.strip().lower())
+    return words
+
+
+def softmax(x):
+    """Computes :math:`\frac{e^{x_i}}{\sum_je^{x_j}}`"""
+    e = np.exp(x)
+    return e / np.sum(e)
