@@ -52,15 +52,19 @@ class TitleGenerator(object):
         p = util.softmax(self.adj_vectors.dot(vector) / self.tau)
         return npr.choice(self.adjs, p=p)
 
-    def sample_det(self, vector):
-        return npr.choice(DETERMINANTS, p=P_DETERMINANTS)
+    def sample_det(self, adj):
+        det = npr.choice(DETERMINANTS, p=P_DETERMINANTS)
+        # Edge case of a/an (could be better)
+        if det == "A " and adj[0] in 'aeiou':
+            det = "An "
+        return det
 
     def __call__(self, poem):
         """Generates a title for the input"""
         poem_vector = self.poem_vector(poem)
         noun = self.sample_noun(poem_vector).capitalize()
         adj = self.sample_adjective(poem_vector).capitalize()
-        det = self.sample_det(poem_vector).capitalize()
+        det = self.sample_det(adj).capitalize()
         return det + adj + " " + noun
 
     def save(self, filename):
