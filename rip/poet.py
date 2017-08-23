@@ -140,6 +140,11 @@ def main():
         quatrain = poet.generate_quatrain()
         quatrain = poet.add_title(quatrain)
         image.make_image(quatrain, output_file=sys.argv[3])
+    elif mode == 'image_text':
+        quatrain = poet.generate_quatrain()
+        quatrain = poet.add_title(quatrain)
+        image.make_image(quatrain, output_file=sys.argv[3])
+        util.savetxt(sys.argv[4], quatrain.split('\n'))
     else:
         print('mode %s not recognized. Here, get a couplet for free:\n' % mode, file=sys.stderr)
         print(poet.generate_couplet(), file=sys.stderr)

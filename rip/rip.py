@@ -6,6 +6,8 @@ import time
 import curse
 from subprocess import check_output
 
+import praw
+
 import util
 import tweet
 import poetry
@@ -24,6 +26,19 @@ class RedditIambicPentameterBot(object):
         self.last_tweet = 0
         self.last_quatrain_tweet = 0
         self.start = time.time()
+        self.init_reddit()
+
+    def init_reddit(self):
+        # Get reddit instance
+        self.r = praw.Reddit(user_agent=self.reddit.user_agent,
+                             client_id=self.reddit.client_id,
+                             client_secret=self.reddit.secret,
+                             username=self.reddit.user_name,
+                             password=self.reddit.password)
+        # Get r/all/ instance
+        self.r_all = self.r.subreddit(self.reddit.subreddit)
+        # Get r/R_I_P instance
+        self.r_R_I_P = self.r.subreddit('R_I_P')
 
     def tick(self):
         """Get time since last call"""
@@ -71,7 +86,7 @@ class RedditIambicPentameterBot(object):
                   '\t/u/%s' % comment.author +                      # author
                   '\t/r/%s' % comment.submission.subreddit +        # subreddit
                   '\t%s' % comment.submission.over_18 +             # nsfw tag
-                  '\t%s' % comment.body.strip().replace('\n', '') + # comment
+                  '\t%s' % comment.body.strip().replace('\n', '') +  # comment
                   '\t%s' % verse,                                   # clean comment
                   file=f)
 
@@ -79,9 +94,18 @@ class RedditIambicPentameterBot(object):
         """Tweet an image of a quatrain occasionaly"""
         now = time.time()
         if now > self.last_quatrain_tweet + self.twitter.tweet_quatrain_every:
-            check_output(["python", "rip/poet.py", self.config_file, "image", 'tmp.png'])
+            check_output(["python", "rip/poet.py", self.config_file,
+                          "image_text", 'tmp.png', 'tmp.txt'])
             tweet.tweet_image('tmp.png', self.twitter)
+            self.post_quatrain()
+            self.r_R_I_P.submit()
             self.last_quatrain_tweet = time.time()
+
+    def post_quatrain(self):
+        quatrain = util.loadtxt('tmp.txt')
+        title = quatrain[0]
+        text = '\n'.join(['> ' + line for line in quatrain[2:]])
+        self.R_I_P.submit(title, selftext=text)
 
     def is_done(self):
         """Returns true if the bot has found `max_records` pentameters"""
