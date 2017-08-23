@@ -30,19 +30,19 @@ class TitleGenerator(object):
         self.noun_vectors = np.zeros((len(self.nouns), self.nlp.vocab.vectors_length))
         for i, noun in enumerate(self.nouns):
             tok = self.nlp(noun.decode('utf-8'))
-            self.noun_vectors[i] = tok.vector / tok.vector_norm if tok.vector_norm > 0 else 0
+            self.noun_vectors[i] = tok.vector
         # Adjectives vectors
         self.adj_vectors = np.zeros((len(self.adjs), self.nlp.vocab.vectors_length))
         for i, adj in enumerate(self.adjs):
             tok = self.nlp(adj.decode('utf-8'))
-            self.adj_vectors[i] = tok.vector / tok.vector_norm if tok.vector_norm > 0 else 0
+            self.adj_vectors[i] = tok.vector
 
     def poem_vector(self, poem):
         """Creates a poem vector"""
         doc = self.nlp(poem.decode('utf-8'))
         vectors = [w.vector for w in doc if w.tag_.startswith('NN')]
         vector = sum(vectors) / len(vectors)
-        return vector / np.linalg.norm(vector)
+        return vector
 
     def sample_noun(self, vector):
         p = util.softmax(self.noun_vectors.dot(vector) / self.tau)
