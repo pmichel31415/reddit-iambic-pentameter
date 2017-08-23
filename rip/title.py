@@ -55,7 +55,7 @@ class TitleGenerator(object):
     def sample_det(self, adj):
         det = npr.choice(DETERMINANTS, p=P_DETERMINANTS)
         # Edge case of a/an (could be better)
-        if det == "A " and adj[0] in 'aeiou':
+        if det == "A " and adj[0] in 'AEIOU':
             det = "An "
         return det
 
