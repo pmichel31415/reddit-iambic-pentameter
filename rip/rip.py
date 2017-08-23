@@ -98,14 +98,13 @@ class RedditIambicPentameterBot(object):
                           "image_text", 'tmp.png', 'tmp.txt'])
             tweet.tweet_image('tmp.png', self.twitter)
             self.post_quatrain()
-            self.r_R_I_P.submit()
             self.last_quatrain_tweet = time.time()
 
     def post_quatrain(self):
         quatrain = util.loadtxt('tmp.txt')
         title = quatrain[0]
-        text = '\n'.join(['> ' + line for line in quatrain[2:]])
-        self.R_I_P.submit(title, selftext=text)
+        text = '\n\n'.join(['> ' + line for line in quatrain[2:]])
+        self.r_R_I_P.submit(title, selftext=text)
 
     def is_done(self):
         """Returns true if the bot has found `max_records` pentameters"""
