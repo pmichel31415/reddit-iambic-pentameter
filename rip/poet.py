@@ -14,7 +14,7 @@ import title
 
 
 class Poet(object):
-    """Composes poems (yeah...)"""
+    """Composes poems (duh...)"""
 
     def __init__(self, config_file):
         """Constructor"""
@@ -47,7 +47,6 @@ class Poet(object):
             line = line[:-1] + '.'
         return line
 
-
     def find_rhyming_verse(self, rhyme, verse=None):
         """Finds a random verse that rhymes with the input"""
         # Get all rhyming verses
@@ -62,7 +61,7 @@ class Poet(object):
             for v in candidates:
                 if poetry.last_word(verse) != poetry.last_word(v):
                     return v
-        return candidates[-1] 
+        return candidates[-1]
 
     def sample_rhyming_pair(self, rhyme):
         """Sample a pair of rhyming verses"""
@@ -122,9 +121,9 @@ def load_verses(filename):
     with open(filename, 'r') as f:
         for l in f:
             fields = l.strip().split('\t')
-            if len(fields) == 6:
-                if curse.is_clean(fields[-1]):
-                    verses.append(fields[-2].strip())
+            # Only select verses without curse words
+            if curse.is_clean(fields[-1]):
+                verses.append(fields[-2].strip())
     return verses
 
 
@@ -133,19 +132,23 @@ def main():
     mode = sys.argv[2]
     poet = Poet(config_file)
     if mode == 'text':
+        # Print a sonnet to stdout (for debugging mainly)
         sonnet = poet.generate_sonnet()
         sonnet = poet.add_title(sonnet)
         print(sonnet)
     elif mode == 'image':
+        # Save quatrain in image form
         quatrain = poet.generate_quatrain()
         quatrain = poet.add_title(quatrain)
         image.make_image(quatrain, output_file=sys.argv[3])
     elif mode == 'image_text':
+        # Save a quatrain in imag and text form
         quatrain = poet.generate_quatrain()
         quatrain = poet.add_title(quatrain)
         image.make_image(quatrain, output_file=sys.argv[3])
         util.savetxt(sys.argv[4], quatrain.split('\n'))
     else:
+        # Print a couplet and a warning
         print('mode %s not recognized. Here, get a couplet for free:\n' % mode, file=sys.stderr)
         print(poet.generate_couplet(), file=sys.stderr)
 

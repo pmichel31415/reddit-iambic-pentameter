@@ -60,14 +60,16 @@ def detect_iambic_pentameter(candidate, pattern='01010101010', allow_feminine_rh
     # Return the iambic pentameter
     return candidate
 
+
 def last_word(verse):
     """Retrieve the last word of a verse"""
     return preprocess_verse(verse).split()[-1]
 
+
 def verse_rhyme(verse):
     """Gets the rhyme of a verse"""
     # Get last word
-    w = last_word(verse) 
+    w = last_word(verse)
     # Get last two phones
     phones = pr.phones_for_word(w)[0]
     last = re.match('.+ ([a-zA-Z]+[0-9][^0-9]*)$', phones)

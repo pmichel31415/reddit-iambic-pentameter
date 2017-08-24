@@ -14,6 +14,7 @@ def comment_to_tweet(comment):
 
 
 def authenticate(twitter):
+    """Authenticate and return a twitter api object"""
     # Create the OAuth instance
     auth = tweepy.OAuthHandler(twitter.consumer_key, twitter.consumer_secret)
     # Get access token

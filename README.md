@@ -46,6 +46,7 @@ This line follows the ``0101010101`` stress pattern, here's a breakdown
 RIP requires a bunch of packages to run:
 
     numpy>=1.11.0       # For all the math and random number generation
+    Pillow>=4.2.1       # To convert text to images
     spacy>=1.8.2        # For the title generation (POS tagging, word vectors)
     tweepy>=3.5.0       # Interface to the twitter API
     PyYAML>=3.12        # For the yaml config files

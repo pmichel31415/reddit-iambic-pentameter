@@ -10,6 +10,7 @@ pad = 5
 
 
 def make_image(text, fontsize=45, output_file='tmp.png', fontname='HamletOrNot.ttf'):
+    """Make an image out of a poem"""
     # Get font
     font = ImageFont.truetype(fontname, fontsize * factor)
     # Compute height
@@ -24,7 +25,7 @@ def make_image(text, fontsize=45, output_file='tmp.png', fontname='HamletOrNot.t
     draw.text((pad * factor, pad * factor), text, (0, 0, 0), font=font)
     # Resize with antialiasing
     img_resized = image.resize((width, height), Image.ANTIALIAS)
-    # Save
+    # Save to file
     img_resized.save(output_file)
 
 

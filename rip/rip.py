@@ -19,16 +19,20 @@ class RedditIambicPentameterBot(object):
     def __init__(self, config_file):
         """Init from yaml"""
         self.config_file = config_file
+        # Load from yaml config file
         util.load_config(self, config_file)
+        # Initialize other relevant variables
         self.n_pentameters = 0
         self.n_length_removed = 0
         self.n_pentameters_epoch = 0
         self.last_tweet = 0
         self.last_quatrain_tweet = 0
         self.start = time.time()
+        # Initialize reddit
         self.init_reddit()
 
     def init_reddit(self):
+        """Initialize the reddit instance"""
         # Get reddit instance
         self.r = praw.Reddit(user_agent=self.reddit.user_agent,
                              client_id=self.reddit.client_id,
@@ -90,20 +94,29 @@ class RedditIambicPentameterBot(object):
                   '\t%s' % verse,                                   # clean comment
                   file=f)
 
-    def tweet_quatrain(self):
-        """Tweet an image of a quatrain occasionaly"""
+    def publish_quatrain(self):
+        """Publish a quatrain on social media every given interval"""
         now = time.time()
         if now > self.last_quatrain_tweet + self.twitter.tweet_quatrain_every:
             check_output(["python", "rip/poet.py", self.config_file,
                           "image_text", 'tmp.png', 'tmp.txt'])
-            tweet.tweet_image('tmp.png', self.twitter)
-            self.post_quatrain()
+            self.tweet_quatrain('tmp.png')
+            self.post_quatrain('tmp.txt')
             self.last_quatrain_tweet = time.time()
 
-    def post_quatrain(self):
-        quatrain = util.loadtxt('tmp.txt')
+    def tweet_quatrain(self, img_file):
+        """Tweet an image of a quatrain"""
+        tweet.tweet_image(img_file, self.twitter)
+
+    def post_quatrain(self, txt_file):
+        """Post a quatrain on reddit"""
+        # Load the quatrain from a text file
+        quatrain = util.loadtxt(txt_file)
+        # Get title
         title = quatrain[0]
+        # Format as a markdown quote
         text = '\n\n'.join(['> ' + line for line in quatrain[2:]])
+        # Post on the r/R_I_P subreddit
         self.r_R_I_P.submit(title, selftext=text)
 
     def is_done(self):
