@@ -31,7 +31,9 @@ class Poet(object):
         self.n_rhymes = len(self.rhymes)
         for k, v in self.rhymes.items():
             self.rhymes[k] = list(v)
-        # Probability of picking a rhyme (based on number of such rhymes)
+        # Probability of picking a rhyme
+        # This probability is proportional to the number of verses for each rhyme.
+        # In particular, for rhymes with only one verse, the probability is set to 0
         self.p_rhymes = {r: (len(v) - 1) for r, v in self.rhymes.items()}
         self.names_rhymes, self.p_rhymes = zip(*self.p_rhymes.items())
         self.p_rhymes = np.asarray(self.p_rhymes, dtype=float)
@@ -53,14 +55,18 @@ class Poet(object):
         rhyming_verses = self.rhymes[rhyme]
         # Until we have a different verse
         # if verse is None this will make sure the rhyming verse is different
-        # Sample a rhyming verse
+        # TODO: this is not the best way to ensure the verses are different
+        # it is however relatively simple and works in most cases
+        # Sample 4 candidate verses
         num_candidates = min(4, len(rhyming_verses))
         candidate_ids = npr.choice(rhyming_verses, size=num_candidates, replace=False)
         candidates = [self.verses[i] for i in candidate_ids]
         if verse is not None:
+            # Select the first candidate with a different last word
             for v in candidates:
                 if poetry.last_word(verse) != poetry.last_word(v):
                     return v
+        # If all the candidates have the same last word, just go with it
         return candidates[-1]
 
     def sample_rhyming_pair(self, rhyme):
@@ -110,8 +116,11 @@ class Poet(object):
 
     def add_title(self, poem):
         """Generate a title and prepend it to the string"""
+        # Get the title
         t = self.generate_title(poem)
+        # Add a nice separator
         sep = "\n%s\n" % "".join(["-"] * len(t))
+        # Concatenate and ship
         return t + sep + poem
 
 

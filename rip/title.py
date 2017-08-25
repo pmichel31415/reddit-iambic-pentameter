@@ -21,6 +21,7 @@ class TitleGenerator(object):
         self.nlp = spacy.load('en')
 
     def initialize(self, nouns_file, adjs_file, determinants=DETERMINANTS, tau=1.0):
+        """Initialize the generator"""
         # Save temperature
         self.tau = tau
         # Load nouns
@@ -30,13 +31,11 @@ class TitleGenerator(object):
         # Noun vectors
         self.noun_vectors = np.zeros((len(self.nouns), self.nlp.vocab.vectors_length))
         for i, noun in enumerate(self.nouns):
-            tok = self.nlp(noun.decode('utf-8'))
-            self.noun_vectors[i] = tok.vector
+            self.noun_vectors[i] = self.nlp(noun.decode('utf-8')).vector
         # Adjectives vectors
         self.adj_vectors = np.zeros((len(self.adjs), self.nlp.vocab.vectors_length))
         for i, adj in enumerate(self.adjs):
-            tok = self.nlp(adj.decode('utf-8'))
-            self.adj_vectors[i] = tok.vector
+            self.adj_vectors[i] = self.nlp(adj.decode('utf-8')).vector
 
     def poem_vector(self, poem):
         """Creates a poem vector"""
