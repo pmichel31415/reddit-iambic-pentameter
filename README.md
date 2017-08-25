@@ -11,11 +11,20 @@ RIP is a bot that scans new comment on the popular message board [reddit](https:
 Here are some funny quartains it composed:
 
 <div align="center">
-    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" width="200px">
-</div>
-
-<div align="center">
-    <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" width="200px">
+  <table>
+    <tr>
+      <tb>
+        <div align="center">
+          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" height="150px" style="margin-right: 10px;">
+        </div>
+      </tb>
+      <tb>
+        <div align="center">
+          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" height="150px" style="margin-left: 10px;">
+        </div>
+      </tb>
+    </tr>
+  </table>
 </div>
 
 RIP tweets an Iambic pentameter found on twitter every 2 hours, [follow him!](https://twitter.com/R_I_P_bot)
@@ -68,7 +77,9 @@ RIP also generates titles for its poems. Instead of just using purely random wor
 
 Without going into too much details, word vectors associate each word with a 300 dimensional vector. These vectors have the nice property that their dot product somewhat correlates with the semantic similarity between words, ie
 
-![Glove dot product example](images/glove_dot.png)
+<div align="center">
+  <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/glove_dot.png" height="50px">
+</div>
 
 We construct a vector representation for the poem by averaging the word vectors for all the nouns in the poem (kind of getting the "average topic" of the poem). We then sample a noun and an adjective from a predefined list to form a title.
 
@@ -76,7 +87,9 @@ We choose the noun and adjective to be close to the topic of the poem. This mean
 
 For math savvy readers this can be written as:
 
-![Log probability](images/noun_log_prob.png)
+<div align="center">
+  <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/noun_log_prob.png" height="50px">
+</div>
 
 In practice this gives relatively good results.
 
