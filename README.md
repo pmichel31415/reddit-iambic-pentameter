@@ -15,12 +15,12 @@ Here are some funny quartains it composed:
     <tr>
       <tb>
         <div align="center">
-          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" height="150px" style="margin-right: 10px;">
+          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" height="120px" style="margin-right: 10px;">
         </div>
       </tb>
       <tb>
         <div align="center">
-          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" height="150px" style="margin-left: 10px;">
+          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" height="120px" style="margin-left: 10px;">
         </div>
       </tb>
     </tr>
