@@ -11,20 +11,10 @@ RIP is a bot that scans new comment on the popular message board [reddit](https:
 Here are some funny quartains it composed:
 
 <div align="center">
-  <table>
-    <tr>
-      <tb>
-        <div align="center">
-          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" height="120px" style="margin-right: 10px;">
-        </div>
-      </tb>
-      <tb>
-        <div align="center">
-          <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" height="120px" style="margin-left: 10px;">
-        </div>
-      </tb>
-    </tr>
-  </table>
+  <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_conventional_beyond.png" width="300px">
+</div>
+<div align="center">
+  <img src="https://github.com/pmichel31415/reddit-iambic-pentameter/raw/master/images/the_christian_zoo.png" width="300px">
 </div>
 
 RIP tweets an Iambic pentameter found on twitter every 2 hours, [follow him!](https://twitter.com/R_I_P_bot)
